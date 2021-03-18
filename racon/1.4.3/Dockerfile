@@ -13,6 +13,14 @@ LABEL license="https://github.com/isovic/racon/blob/master/LICENSE"
 LABEL maintainer="Erin Young"
 LABEL maintainer.email="eriny@utah.gov"
 
+#  install nvidia CUDA
+RUN --gpus all nvidia/cuda:10.2-cudnn7-devel
+git clone --recursive -b master https://github.com/clara-parabricks/GenomeWorks.git
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -Dgw_cuda_gen_all_arch=OFF
+make -j install
+
 # install python
 RUN apt-get update && apt-get install -y \
    perl \
@@ -36,7 +44,7 @@ RUN wget https://github.com/isovic/racon/releases/download/1.4.3/racon-v1.4.3.ta
   cd racon-v1.4.3 && \
   mkdir build && \
   cd build && \
-  cmake -DCMAKE_BUILD_TYPE=Release .. && \
+  cmake -DCMAKE_BUILD_TYPE=Release -Dracon_enable_cuda=ON .. && \
   make && \
   mkdir /data
 
